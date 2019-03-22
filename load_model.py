@@ -30,7 +30,7 @@ infered_vectors_list  = X
 
 # X =  np.array(model.wv[model.wv.vocab]).reshape(len(model.wv.vocab), -1)
 
-for i in range(5,30):
+for i in range(30,50):
     kmean_model = KMeans(n_clusters=i)
     kmean_model.fit(X)
     print (i,kmean_model.inertia_)
