@@ -31,11 +31,11 @@ def stopwordslist(filepath):
 # jieba.load_userdict("C:/Program Files/Python37/Lib/site-packages/jieba/dict.txt")
 jieba.load_userdict("C:/Program Files/Python37/Lib/site-packages/jieba/dict_voc.txt")
 
-stopwords = stopwordslist("stopword_2.txt")  # 这里加载停用词的路径
+keyword = stopwordslist("C:/Users/Ruby/PycharmProjects/gensim_test/keyword.txt")  # 这里加载停用词的路径
 
 sys.setrecursionlimit(3000)
 
-with open('articles.csv', newline='' , encoding='utf-8') as csvfile:
+with open('C:/Users/Ruby/PycharmProjects/gensim_test/articles.csv', newline='' , encoding='utf-8') as csvfile:
     rows = csv.DictReader(csvfile)
     for row in rows:
         # print(row['text'])
@@ -44,38 +44,23 @@ with open('articles.csv', newline='' , encoding='utf-8') as csvfile:
         seg_list = jieba.cut(tw, cut_all=False)
 
         # print(" ".join(seg_list))
+        if str(row['id']) not in allword.keys():
+            allword[str(row['id'])] = 0
+            countWord = []
+            outstr =[]
+            for x in seg_list:
+                if x in keyword:
+                    countWord.append(x)
+                    if x not in outstr:
+                        outstr.append(x)
+            if outstr:
+                with open("getKeyword.txt","a", encoding='utf-8-sig') as f:
+                    # f.write(str(row['id'])+","+str(tw.replace('\r','').replace('\n','').replace(',','').replace(' ',''))+","+str(" ".join(outstr))+","+str(len(outstr))+","+str(len(countWord))+"\n")
+                    f.write(str(" ".join(outstr))+","+str(len(outstr))+","+str(len(countWord))+"\n")
 
-        afterCut = []
-        for x in seg_list:
-            outstr =""
-            if x not in stopwords:
-                if x != '\t' and x != '\n':
-                    if x in allword.keys():
-                        allword[x] = allword[x] + 1
-                    else:
-                        allword[x] = 1
-                    afterCut.append(x)
-        # print(afterCut)
-        sentences.append(afterCut)
-# print(sentences)
-
-file = open('allword.pickle', 'wb')
-pickle.dump(allword, file)
-file.close()
-
-# with open("ducanci.txt","a", encoding='utf-8-sig') as f:
-#     for x in allword.keys():
-#         f.write(str(x)+","+str(allword[x])+"\n")
 
 print('gogogo')
-model = FastText(sentences,  size=300, window=5, min_count=5, iter=10, min_n=1 , max_n=6, word_ngrams=1)
-# print(model.most_similar('你'))  # 词向量获得的方式
-# print(model.wv['你']) # 词向量获得的方式
 
-model.save(fname)
-
-for x in model.wv.most_similar("癌症",topn=50):
-    print(x)
 
 end = time.time()
 print(end - start)
